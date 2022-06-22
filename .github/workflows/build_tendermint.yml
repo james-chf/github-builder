@@ -34,9 +34,9 @@ jobs:
           name: tendermint-${{ matrix.goos }}-${{ matrix.goarch }}
           path: build/tendermint
       # below adapted from https://stackoverflow.com/questions/65574667/being-able-to-download-a-github-actions-artifact-by-copy-past-the-link-url-to-cu
-      - name: Get short SHA
-        id: short_sha
-        run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+      - name: Get release name
+        id: release_name
+        run: echo "${{ github.sha }}-${{ matrix.goos }}-${{ matrix.goarch }}"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -44,8 +44,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # Using short SHA from 2nd step for tag and release name.
-          tag_name: ${{steps.short_sha.outputs.sha8}}
-          release_name: ${{steps.short_sha.outputs.sha8}}
+          tag_name: ${{steps.short_sha.outputs.release_name}}
+          release_name: ${{steps.short_sha.outputs.release_name}}
           draft: false
           prerelease: false
         # Now we upload the artifact we generated in the first step to
