@@ -1,0 +1,35 @@
+name: Build tendermint
+on:
+  push:
+
+jobs:
+  build:
+    name: Build tendermint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goarch: ["arm", "amd64"]
+        goos: ["linux"]
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "1.18"
+      - uses: actions/checkout@v3
+        with:
+          repository: tendermint/tendermint
+          ref: 56e329aa9e1fa19f8947288f047688abad652526
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-${{ matrix.goos }}-${{ matrix.goarch }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.goos }}-${{ matrix.goarch }}-go-
+      - name: build
+        run: GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} make build
+      - name: publish
+        uses: actions/upload-artifact@v3
+        with:
+          name: tendermint-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: build/tendermint
