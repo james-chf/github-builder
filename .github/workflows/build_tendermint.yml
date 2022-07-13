@@ -9,7 +9,8 @@ jobs:
     strategy:
       matrix:
         goarch: ["arm", "amd64"]
-        goos: ["linux"]
+        goos: ["linux", "darwin"]
+        ref: ["29e5fbcc648510e4763bd0af0b461aed92c21f30"]
     steps:
       - uses: actions/setup-go@v3
         with:
@@ -17,7 +18,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: tendermint/tendermint
-          ref: 56e329aa9e1fa19f8947288f047688abad652526
+          ref: ${{ matrix.ref }}
       - uses: actions/cache@v3
         with:
           path: |
@@ -36,7 +37,7 @@ jobs:
       # below adapted from https://stackoverflow.com/questions/65574667/being-able-to-download-a-github-actions-artifact-by-copy-past-the-link-url-to-cu
       - name: Get release name
         id: release_name
-        run: echo "::set-output name=release_name::$(echo ${{ github.sha }}-${{ matrix.goos }}-${{ matrix.goarch }})"
+        run: echo "::set-output name=release_name::$(echo tendermint-${{ matrix.ref }}-${{ matrix.goos }}-${{ matrix.goarch }})"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
