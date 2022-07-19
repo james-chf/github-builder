@@ -44,11 +44,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # Using short SHA from 2nd step for tag and release name.
           tag_name: ${{steps.release_name.outputs.release_name}}
           release_name: ${{steps.release_name.outputs.release_name}}
           draft: false
           prerelease: false
+          body: This is a build of https://github.com/tendermint/tendermint/commit/${{ matrix.ref }}
         # Now we upload the artifact we generated in the first step to
         # the release we created in the 3nd step
       - name: Upload Release Asset
